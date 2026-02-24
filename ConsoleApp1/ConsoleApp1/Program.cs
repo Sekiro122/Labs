@@ -1,120 +1,68 @@
 ﻿using System;
-using System.CodeDom.Compiler;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Linq;
-using System.Net.Http.Headers;
-using System.Reflection.Emit;
-using System.Runtime.CompilerServices;
-using System.Runtime.ExceptionServices;
-using System.Runtime.InteropServices;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
-using System.Xml.Linq;
-using System.Xml.Schema;
 
 namespace ConsoleApp1
 {
-    internal class Program
+    class Employee
     {
-        public class Animal
-        {
-            public string Name { get; set; }
-            public int Age { get; set; }
+        public string Name { get; set; }
+        public int Age { get; set; }
 
-            public Animal(string name, int age)
-            {
-                Name = name;
-                Age = age;
-            }
+        public Employee() { Name = "Неизвестно"; Age = 0; }
+        public Employee(string name) { Name = name; Age = 0; }
+        public Employee(string name, int age) { Name = name; Age = age; }
 
-            public virtual void MakeSound()
-            {
-                Console.WriteLine("Животное издает звук");
-            }
+        public void DisplayInfo() => Console.WriteLine($"Сотрудник: {Name}, {Age} лет");
+    }
 
-            public void Eat()
-            {
-                Console.WriteLine($"{Name} ест");
-            }
-        }
+    class Box<T>
+    {
+        private T content;
+        public void Put(T item) { content = item; Console.WriteLine($"Положили: {item}"); }
+        public T Get() { Console.WriteLine($"Достали: {content}"); return content; }
+        public void ShowType() => Console.WriteLine($"Тип: {typeof(T).Name}");
+    }
 
-        public class Dog : Animal
-        {
-            public string Breed { get; set; }
+    delegate void SimpleDelegate();
+    delegate int MathDelegate(int a, int b);
+    delegate void StringDelegate(string s);
 
-            public Dog(string name, int age, string breed) : base(name, age)
-            {
-                Breed = breed;
-            }
+    class Program
+    {
+        static void Hello() => Console.WriteLine("Привет!");
+        static void Bye() => Console.WriteLine("Пока!");
+        static int Sum(int a, int b) { Console.WriteLine($"{a}+{b}={a + b}"); return a + b; }
+        static int Mult(int a, int b) { Console.WriteLine($"{a}*{b}={a * b}"); return a * b; }
 
-            public override void MakeSound()
-            {
-                Console.WriteLine($"{Name} лает: Гав-гав!");
-            }
-
-            public void Fetch()
-            {
-                Console.WriteLine($"{Name} приносит мяч");
-            }
-        }
-
-        public class Cat : Animal
-        {
-            private string lazyText;
-            public bool IsLazy { get; set; }
-
-            public Cat(string name, int age, bool isLazy) : base(name, age)
-            {
-                IsLazy = isLazy;
-            }
-
-            public override void MakeSound()
-            {
-                Console.WriteLine($"{Name} мяукает: Мяу!");
-            }
-
-            public void Sleep()
-            {
-                if (IsLazy)
-                    lazyText = "Очень долго";
-                else
-                    lazyText = "Немного";
-                Console.WriteLine($"{Name} спит {lazyText}");
-            }
-        }
         static void Main(string[] args)
         {
-            Animal animal = new Animal("Просто животное", 5);
-            Dog dog = new Dog("Барсик", 3, "Такса");
-            Cat cat = new Cat("Мурка", 2, true);
 
-            animal.Eat();        
-            dog.Eat();           
-            cat.Eat();           
-
+            SimpleDelegate del = Hello;
+            del += Bye;  
+            del();      
             Console.WriteLine();
 
-            animal.MakeSound();  
-            dog.MakeSound();     
-            cat.MakeSound();     
+            MathDelegate math = Sum;
+            Console.WriteLine($"Результат: {math(5, 3)}");
 
+            math = Mult;
+            Console.WriteLine($"Результат: {math(5, 3)}");
             Console.WriteLine();
 
-            dog.Fetch();         
-            cat.Sleep();         
-
+            Employee emp = new Employee("Вова", 16);
+            SimpleDelegate empDel = emp.DisplayInfo;
+            empDel();
             Console.WriteLine();
 
-            Console.WriteLine($"Порода собаки: {dog.Breed}");
-            Console.WriteLine($"Имя кошки: {cat.Name}"); 
-            Console.WriteLine($"Ленивая ли кошка: {cat.IsLazy}");
+            MathDelegate lambda = (x, y) => x * x + y * y;
+            Console.WriteLine($"5^2 + 3^2 = {lambda(5, 3)}");
+            Console.WriteLine();
 
+            Employee employee = new Employee("Вова", 16);
+            Box<string> box = new Box<string>();
+            box.Put("burger");
+            box.Get();
+            box.ShowType();
 
         }
-
-
     }
 }
-
